@@ -1,5 +1,6 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
+import classNames from "classnames";
 import Cell from "./Cell";
 
 const styles = {
@@ -11,6 +12,7 @@ const styles = {
     height: 20,
     margin: 0,
     padding: 0,
+    fontSize: 12,
     userSelect: "none",
     "&:hover": {
       cursor: "pointer"
@@ -19,6 +21,17 @@ const styles = {
       outline: "solid gray 2px",
       outlineOffset: "-2px"
     }
+  },
+  inactiveHeader: {
+    background: "whitesmoke",
+    border: "solid lightgray 1px",
+    borderCollapse: "collapse",
+    width: 60,
+    height: 20,
+    margin: 0,
+    padding: 0,
+    fontSize: 12,
+    userSelect: "none"
   }
 };
 
@@ -31,11 +44,23 @@ const Row = props => {
     startSelect,
     inputMode,
     inputValue,
-    handleChangeInput
+    handleChangeInput,
+    showRowHeaders,
+    rowHeaders,
+    disableSelectRow
   } = props;
   return (
     <tr>
-      <th id={`r-${rowIndex}`} className={classes.headerCell} />
+      {showRowHeaders && (
+        <th
+          id={`r-${rowIndex}`}
+          className={classNames(
+            !disableSelectRow ? classes.headerCell : classes.inactiveHeader
+          )}
+        >
+          {rowHeaders[rowIndex].label}
+        </th>
+      )}
       {row.map((cell, i) => {
         const id = `${rowIndex}-${i}`;
         return (

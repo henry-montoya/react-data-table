@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core/styles";
 
 const styles = {
   input: {
-    width: "90%",
+    width: "100%",
     height: "100%"
   }
 };

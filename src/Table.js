@@ -13,7 +13,16 @@ const styles = {
 
 const Table = props => {
   const [state, dispatch] = useContext(TableContext);
-  const { classes, data, colHeaders } = props;
+  const {
+    classes,
+    data,
+    colHeaders,
+    rowHeaders,
+    showColHeaders,
+    showRowHeaders,
+    disableSelectCol,
+    disableSelectRow
+  } = props;
   const [tableData, setTableData] = useState(data);
   const [mouseDown, setMousedown] = useState(false);
   const [startSelect, setStartSelect] = useState("");
@@ -57,8 +66,8 @@ const Table = props => {
     });
     window.addEventListener("click", e => {
       const identifier = e.target.id.split("-");
-      if (identifier[0] === "r") selectRow(identifier[1]);
-      if (identifier[0] === "c") selectCol(identifier[1]);
+      if (identifier[0] === "r" && !disableSelectRow) selectRow(identifier[1]);
+      if (identifier[0] === "c" && !disableSelectCol) selectCol(identifier[1]);
     });
   }, []);
   useEffect(() => {
@@ -186,9 +195,13 @@ const Table = props => {
       "ArrowRight"
     ];
     if (key === "Backspace" && selectedCells.length && !inputMode) {
+      let updatedData = _.cloneDeep(tableData);
       selectedCells.forEach(id => {
-        document.getElementById(id).innerHTML = "";
+        const rowIndex = parseInt(id.split("-")[0]);
+        const colIndex = parseInt(id.split("-")[1]);
+        updatedData[rowIndex][colIndex] = "";
       });
+      setTableData(updatedData);
     } else if (key && !noInput.includes(key) && startSelect && !inputMode) {
       setInputMode(startSelect);
       setInputValue(key);
@@ -204,9 +217,9 @@ const Table = props => {
   const handleSaveChange = (cellId, value) => {
     const rowIndex = parseInt(cellId.split("-")[0]);
     const colIndex = parseInt(cellId.split("-")[1]);
-    let newData = _.cloneDeep(tableData);
-    newData[rowIndex][colIndex] = { value };
-    setTableData(newData);
+    let updatedData = _.cloneDeep(tableData);
+    updatedData[rowIndex][colIndex] = { value };
+    setTableData(updatedData);
     setInputValue("");
   };
 
@@ -220,17 +233,27 @@ const Table = props => {
       <div>selected: {selectedCells.join(",")}</div>
 
       <table cellSpacing={0} cellPadding={0} className={classes.table}>
-        <Header colCount={colCount} colHeaders={colHeaders} />
+        {showColHeaders && (
+          <Header
+            colCount={colCount}
+            colHeaders={colHeaders}
+            showRowHeaders={showRowHeaders}
+            disableSelectCol={disableSelectCol}
+          />
+        )}
         <tbody>
           {tableData.map((row, i) => (
             <Row
               row={row}
               rowIndex={i}
+              rowHeaders={rowHeaders}
               selectedCells={selectedCells}
               startSelect={startSelect}
               inputMode={inputMode}
               inputValue={inputValue}
               handleChangeInput={handleChangeInput}
+              showRowHeaders={showRowHeaders}
+              disableSelectRow={disableSelectRow}
             />
           ))}
         </tbody>

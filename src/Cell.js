@@ -6,11 +6,17 @@ import InputCell from "./InputCell";
 const styles = {
   cell: {
     border: "solid lightgray 1px",
+    borderTop: "solid rgb(247, 246, 246) 1px",
+    borderBottom: "solid rgb(247, 246, 246) 1px",
     borderCollapse: "collapse",
     width: 60,
     height: 20,
     margin: 0,
-    padding: 0,
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 3,
+    paddingBottom: 3,
+    fontSize: 12,
     userSelect: "none",
     "&:hover": {
       cursor: "crosshair"
