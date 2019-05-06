@@ -1,25 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import TableStore from "./TableStore";
+import Table from "./Table";
 
-function App() {
+const data = [
+  [{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 }],
+  [{ value: 6 }, { value: 7 }, { value: 8 }, { value: 9 }, { value: 10 }],
+  [{ value: 11 }, { value: 12 }, { value: 13 }, { value: 14 }, { value: 15 }]
+];
+
+const colHeaders = [
+  {
+    label: "taco bell"
+  },
+  {
+    label: "KFC"
+  },
+  {
+    label: "Jesus"
+  },
+  {
+    label: "PornHub"
+  },
+  {
+    label: "Indica"
+  }
+];
+
+function App(props) {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <TableStore>
+      <Table data={data} colHeaders={colHeaders} />
+    </TableStore>
   );
 }
 
