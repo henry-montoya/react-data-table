@@ -12,15 +12,21 @@ const styles = {
     width: 60,
     height: 20,
     margin: 0,
-    paddingLeft: 8,
-    paddingRight: 8,
-    paddingTop: 3,
-    paddingBottom: 3,
+    //paddingLeft: 8,
+    //paddingRight: 8,
+    //paddingTop: 3,
+    //paddingBottom: 3,
     fontSize: 12,
     userSelect: "none",
     "&:hover": {
       cursor: "crosshair"
     }
+  },
+  innerCell: {
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 3,
+    paddingBottom: 3
   },
   cellSelected: {
     outline: "solid rgba(5, 107, 223, .8) 2px",
@@ -43,7 +49,8 @@ const Cell = props => {
     cell,
     inputMode,
     inputValue,
-    handleChangeInput
+    handleChangeInput,
+    handlePaste
   } = props;
 
   const cellRef = useRef();
@@ -57,6 +64,8 @@ const Cell = props => {
     <Fragment>
       <td
         ref={cellRef}
+        //contentEditable={true}
+        onPaste={handlePaste}
         id={id}
         tabIndex={0}
         className={classNames(
@@ -69,7 +78,9 @@ const Cell = props => {
         )}
       >
         {inputMode !== id ? (
-          cell.value
+          <span id={id} className={classes.innerCell}>
+            {cell.value}
+          </span>
         ) : (
           <InputCell
             inputValue={inputValue}

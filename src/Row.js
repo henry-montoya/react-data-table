@@ -47,7 +47,8 @@ const Row = props => {
     handleChangeInput,
     showRowHeaders,
     rowHeaders,
-    disableSelectRow
+    disableSelectRow,
+    handlePaste
   } = props;
   return (
     <tr>
@@ -72,6 +73,7 @@ const Row = props => {
             inputMode={inputMode}
             inputValue={inputValue}
             handleChangeInput={handleChangeInput}
+            handlePaste={handlePaste}
           />
         );
       })}

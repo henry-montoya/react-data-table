@@ -3,7 +3,8 @@ import { withStyles } from "@material-ui/core/styles";
 
 const styles = {
   input: {
-    width: "100%",
+    boxSizing: "content-box",
+    width: "90%",
     height: "100%"
   }
 };

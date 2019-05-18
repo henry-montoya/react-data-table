@@ -4,6 +4,8 @@ import { withStyles } from "@material-ui/core/styles";
 import Header from "./Header";
 import Row from "./Row";
 import _ from "lodash";
+import Mousetrap from "mousetrap";
+import { noInput, navKeys } from "./constants";
 
 const styles = {
   table: {
@@ -29,10 +31,15 @@ const Table = props => {
   const [recentSelect, setRecentSelect] = useState("");
   const [currentSelect, setCurrentSelect] = useState("");
   const [endSelect, setEndSelect] = useState("");
-  const [selectedCells, setSelectedCells] = useState(["hi"]);
+  const [selectedCells, setSelectedCells] = useState([]);
   const [keyDown, setKeyDown] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [inputMode, setInputMode] = useState("");
+  const [metaDown, setMetaDown] = useState(false);
+  const tableDataRef = useRef();
+  useEffect(() => {
+    tableDataRef.current = tableData;
+  });
   useEffect(() => {
     window.addEventListener("mousedown", e => {
       setMousedown(true);
@@ -52,16 +59,20 @@ const Table = props => {
     });
     window.addEventListener("keydown", e => {
       setKeyDown(e.key);
+      if (e.key === "Meta" || e.key === "Control") {
+        setMetaDown(true);
+      }
     });
     window.addEventListener("keyup", e => {
       setKeyDown(null);
+      if (e.key === "Meta" || e.key === "Control") {
+        setMetaDown(false);
+      }
     });
     window.addEventListener("dblclick", e => {
       const id = e.target.id;
       if (/^[0-9]$/.test(id.split("-")[0])) {
-        const rowCol = id.split("-");
-        setInputMode(id);
-        setInputValue(tableData[rowCol[0]][rowCol[1]].value);
+        initializeInput(id);
       }
     });
     window.addEventListener("click", e => {
@@ -81,11 +92,28 @@ const Table = props => {
   useEffect(() => {
     clickOffCell();
   }, [startSelect]);
+  // useEffect(() => {
+  //   Mousetrap.bind(["command+v", "ctrl+k"], e => {
+  //     e.preventDefault();
+  //     console.log(e.clipboardData.getData("text"));
+  //     console.log("hello");
+  //     //handlePaste(e.clipboardData.getData("text"));
+  //     return false;
+  //   });
+  // }, []);
+
+  //console.log("table Data", tableData);
 
   const rowCount = props.data.length;
   const colCount = props.data[0].length;
   const maxRowIndex = props.data.length - 1;
   const maxColIndex = props.data[0].length - 1;
+
+  const initializeInput = id => {
+    const rowCol = id.split("-");
+    setInputMode(id);
+    setInputValue(tableDataRef.current[rowCol[0]][rowCol[1]].value);
+  };
 
   const clickOffCell = () => {
     if (inputValue) {
@@ -172,39 +200,18 @@ const Table = props => {
   };
 
   const handleKeyDown = key => {
-    const noInput = [
-      "Enter",
-      "Tab",
-      "Shift",
-      "Backspace",
-      "Meta",
-      "CapsLock",
-      "Alt",
-      "Control",
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowRight"
-    ];
-    const navKeys = [
-      "Tab",
-      "Enter",
-      "ArrowUp",
-      "ArrowDown",
-      "ArrowLeft",
-      "ArrowRight"
-    ];
     if (key === "Backspace" && selectedCells.length && !inputMode) {
       let updatedData = _.cloneDeep(tableData);
       selectedCells.forEach(id => {
         const rowIndex = parseInt(id.split("-")[0]);
         const colIndex = parseInt(id.split("-")[1]);
-        updatedData[rowIndex][colIndex] = "";
+        updatedData[rowIndex][colIndex] = { value: "" };
       });
       setTableData(updatedData);
     } else if (key && !noInput.includes(key) && startSelect && !inputMode) {
+      console.log(key);
       setInputMode(startSelect);
-      setInputValue(key);
+      if (!metaDown) setInputValue(key);
     } else if (key && navKeys.includes(key)) {
       setInputMode(false);
       if (inputValue) {
@@ -217,10 +224,31 @@ const Table = props => {
   const handleSaveChange = (cellId, value) => {
     const rowIndex = parseInt(cellId.split("-")[0]);
     const colIndex = parseInt(cellId.split("-")[1]);
-    let updatedData = _.cloneDeep(tableData);
+    let updatedData = _.cloneDeep(tableDataRef.current);
     updatedData[rowIndex][colIndex] = { value };
     setTableData(updatedData);
     setInputValue("");
+  };
+
+  const handlePaste = e => {
+    e.preventDefault();
+    console.log("e", e);
+    const clipboard = e.clipboardData.getData("text");
+    const rows = clipboard.split("\n");
+    let row = parseInt(startSelect.split("-")[0]);
+    let col = parseInt(startSelect.split("-")[1]);
+    let cells = [];
+    rows.forEach(cell => {
+      cells.push(cell.split("\t"));
+    });
+    let updatedData = _.cloneDeep(tableDataRef.current);
+    cells.forEach((r, i) => {
+      r.forEach((c, j) => {
+        updatedData[i + row][j + col] = { value: c };
+      });
+    });
+    console.log("upd", updatedData);
+    setTableData(updatedData);
   };
 
   const handleChangeInput = e => setInputValue(e.target.value);
@@ -254,6 +282,7 @@ const Table = props => {
               handleChangeInput={handleChangeInput}
               showRowHeaders={showRowHeaders}
               disableSelectRow={disableSelectRow}
+              handlePaste={handlePaste}
             />
           ))}
         </tbody>
