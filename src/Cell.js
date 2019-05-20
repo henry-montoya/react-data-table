@@ -43,9 +43,11 @@ const styles = {
 const Cell = props => {
   const {
     classes,
+    rowIndex,
+    colIndex,
     id,
     selectedCells,
-    startSelect,
+    startCell,
     cell,
     inputMode,
     inputValue,
@@ -55,32 +57,32 @@ const Cell = props => {
 
   const cellRef = useRef();
   useEffect(() => {
-    if (id === startSelect) {
+    if (startCell === [rowIndex, colIndex]) {
       cellRef.current.focus();
     }
-  }, [startSelect]);
+  }, [startCell]);
 
   return (
     <Fragment>
       <td
         ref={cellRef}
         //contentEditable={true}
-        onPaste={handlePaste}
+        //onPaste={handlePaste}
         id={id}
+        rowIndex={rowIndex}
+        colIndex={colIndex}
         tabIndex={0}
         className={classNames(
           classes.cell,
-          startSelect === id
+          startCell === [rowIndex, colIndex]
             ? classes.cellFocus
             : selectedCells &&
-                selectedCells.includes(id) &&
+                selectedCells.includes([rowIndex, colIndex]) &&
                 classes.cellSelected
         )}
       >
         {inputMode !== id ? (
-          <span id={id} className={classes.innerCell}>
-            {cell.value}
-          </span>
+          cell.value
         ) : (
           <InputCell
             inputValue={inputValue}

@@ -41,7 +41,7 @@ const Row = props => {
     row,
     rowIndex,
     selectedCells,
-    startSelect,
+    startCell,
     inputMode,
     inputValue,
     handleChangeInput,
@@ -67,13 +67,11 @@ const Row = props => {
         return (
           <Cell
             id={id}
+            rowIndex={rowIndex}
+            colIndex={i}
+            startCell={startCell}
             selectedCells={selectedCells}
-            startSelect={startSelect}
             cell={cell}
-            inputMode={inputMode}
-            inputValue={inputValue}
-            handleChangeInput={handleChangeInput}
-            handlePaste={handlePaste}
           />
         );
       })}
