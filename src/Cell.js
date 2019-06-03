@@ -6,24 +6,37 @@ import InputCell from "./InputCell";
 const styles = {
   cell: {
     border: "solid lightgray 1px",
+    borderTop: "solid rgb(247, 246, 246) 1px",
+    borderBottom: "solid rgb(247, 246, 246) 1px",
     borderCollapse: "collapse",
     width: 60,
     height: 20,
     margin: 0,
-    padding: 0,
+    //paddingLeft: 8,
+    //paddingRight: 8,
+    //paddingTop: 3,
+    //paddingBottom: 3,
+    fontSize: 12,
     userSelect: "none",
     "&:hover": {
-      cursor: "crosshair"
+      cursor: "cell"
     }
   },
+  innerCell: {
+    paddingLeft: 8,
+    paddingRight: 8,
+    paddingTop: 3,
+    paddingBottom: 3
+  },
   cellSelected: {
-    outline: "solid rgba(5, 107, 223, .8) 2px",
-    outlineOffset: "-2px",
+    //outline: "solid rgba(5, 107, 223, .8) 2px",
+    //outlineOffset: "-2px",
     background: "rgba(143, 224, 249, .3)"
   },
   cellFocus: {
-    outline: "solid rgba(5, 107, 223, .8) 2px",
-    outlineOffset: "-2px",
+    //boxShadow: "inset 1px 1px 1px 1px rgba(5,107,223,.8)",
+    outline: "solid rgba(5, 107, 223, .8) 1px",
+    outlineOffset: "-1px",
     background: "rgba(143, 224, 249, .1)"
   }
 };
@@ -31,44 +44,63 @@ const styles = {
 const Cell = props => {
   const {
     classes,
+    rowindex,
+    colindex,
     id,
     selectedCells,
-    startSelect,
+    startCell,
     cell,
     inputMode,
+    activeInput,
     inputValue,
-    handleChangeInput
+    handleChangeInput,
+    handlePaste
   } = props;
+  const { startRow, startCol, finalRow, finalCol } = selectedCells;
 
   const cellRef = useRef();
   useEffect(() => {
-    if (id === startSelect) {
+    if (startCell === id) {
       cellRef.current.focus();
     }
-  }, [startSelect]);
+  }, [startCell, id]);
 
+  const isSelected = () => {
+    if (startRow === null) return false;
+    const row = id.split("-")[0];
+    const col = id.split("-")[1];
+    const rowMin = Math.min(startRow, finalRow);
+    const rowMax = Math.max(startRow, finalRow);
+    const colMin = Math.min(startCol, finalCol);
+    const colMax = Math.max(startCol, finalCol);
+    return row >= rowMin && row <= rowMax && col >= colMin && col <= colMax;
+  };
   return (
     <Fragment>
       <td
         ref={cellRef}
+        //contentEditable={true}
+        //onPaste={handlePaste}
         id={id}
+        rowindex={rowindex}
+        colindex={colindex}
         tabIndex={0}
         className={classNames(
           classes.cell,
-          startSelect === id
+          startCell === id
             ? classes.cellFocus
-            : selectedCells &&
-                selectedCells.includes(id) &&
-                classes.cellSelected
+            : isSelected()
+            ? classes.cellSelected
+            : null
         )}
       >
-        {inputMode !== id ? (
-          cell.value
-        ) : (
+        {inputMode && activeInput === id ? (
           <InputCell
             inputValue={inputValue}
             handleChangeInput={handleChangeInput}
           />
+        ) : (
+          cell.value
         )}
       </td>
     </Fragment>

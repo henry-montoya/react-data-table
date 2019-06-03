@@ -26,10 +26,30 @@ const colHeaders = [
   }
 ];
 
+const rowHeaders = [
+  {
+    label: "taco bell"
+  },
+  {
+    label: "KFC"
+  },
+  {
+    label: "Jesus"
+  }
+];
+
 function App(props) {
   return (
     <TableStore>
-      <Table data={data} colHeaders={colHeaders} />
+      <Table
+        data={data}
+        colHeaders={colHeaders}
+        rowHeaders={rowHeaders}
+        showColHeaders={true}
+        showRowHeaders={true}
+        // disableSelectRow={true}
+        // disableSelectCol={true}
+      />
     </TableStore>
   );
 }
