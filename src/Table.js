@@ -5,12 +5,13 @@ import Header from "./Header";
 import Row from "./Row";
 import _ from "lodash";
 import Mousetrap from "mousetrap";
-import { noInput, navKeys } from "./constants";
+import { noInput, navKeys, backspace, enter } from "./constants";
 import useListeners from "./hooks/useListeners";
 
 const styles = {
   table: {
-    borderCollapse: "collapse"
+    borderCollapse: "collapse",
+    cursor: "cell"
   }
 };
 
@@ -25,7 +26,8 @@ const Table = props => {
     activeInput,
     currentCell,
     startCell,
-    endCell
+    endCell,
+    selectedCells
   } = t;
   const [state, dispatch] = useContext(TableContext);
   const {
@@ -38,27 +40,34 @@ const Table = props => {
     disableSelectCol,
     disableSelectRow
   } = props;
-  const [tableData, setTableData] = useState(data);
-  const [selectedCells, setSelectedCells] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const tableDataRef = useRef();
   useEffect(() => {
-    tableDataRef.current = tableData;
-  });
+    dispatch({ type: "SET_DATA", data });
+  }, []);
+  useEffect(() => {
+    handleKeyStroke(keyName);
+  }, [keyName]);
+
+  const handleKeyStroke = keyName => {
+    if (keyName === backspace)
+      return dispatch({ type: "DELETE", selected: selectedCells });
+    if (keyName === enter && inputMode) {
+      setInputValue("");
+      return dispatch({ type: "UPDATE", cell: activeInput, value: inputValue });
+    }
+  };
 
   const rowCount = props.data.length;
   const colCount = props.data[0].length;
-  const maxRowIndex = props.data.length - 1;
-  const maxColIndex = props.data[0].length - 1;
+  const maxrowindex = props.data.length - 1;
+  const maxcolindex = props.data[0].length - 1;
 
   const handleChangeInput = e => setInputValue(e.target.value);
-
   return (
     <div className="App">
       <div>start: {startCell}</div>
       <div>current: {currentCell}</div>
       <div>end: {endCell}</div>
-      <div>selected: {selectedCells.join(",")}</div>
 
       <table cellSpacing={0} cellPadding={0} className={classes.table}>
         {showColHeaders && (
@@ -70,19 +79,20 @@ const Table = props => {
           />
         )}
         <tbody>
-          {tableData.map((row, i) => (
+          {state.data.map((row, i) => (
             <Row
               key={i}
               row={row}
-              rowIndex={i}
+              rowindex={i}
               rowHeaders={rowHeaders}
               selectedCells={selectedCells}
               startCell={startCell}
-              // inputMode={inputMode}
-              // inputValue={inputValue}
-              // handleChangeInput={handleChangeInput}
+              inputMode={inputMode}
+              activeInput={activeInput}
+              inputValue={inputValue}
+              handleChangeInput={handleChangeInput}
               showRowHeaders={showRowHeaders}
-              // disableSelectRow={disableSelectRow}
+              //disableSelectRow={disableSelectRow}
               // handlePaste={handlePaste}
             />
           ))}

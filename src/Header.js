@@ -50,6 +50,7 @@ const Header = props => {
         {showRowHeaders && <th className={classes.inactiveHeader} />}
         {columns.map((col, i) => (
           <th
+            key={`c-${i}`}
             id={`c-${i}`}
             className={classNames(
               !disableSelectCol ? classes.headerCell : classes.inactiveHeader

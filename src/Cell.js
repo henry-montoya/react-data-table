@@ -19,7 +19,7 @@ const styles = {
     fontSize: 12,
     userSelect: "none",
     "&:hover": {
-      cursor: "crosshair"
+      cursor: "cell"
     }
   },
   innerCell: {
@@ -29,13 +29,14 @@ const styles = {
     paddingBottom: 3
   },
   cellSelected: {
-    outline: "solid rgba(5, 107, 223, .8) 2px",
-    outlineOffset: "-2px",
+    //outline: "solid rgba(5, 107, 223, .8) 2px",
+    //outlineOffset: "-2px",
     background: "rgba(143, 224, 249, .3)"
   },
   cellFocus: {
-    outline: "solid rgba(5, 107, 223, .8) 2px",
-    outlineOffset: "-2px",
+    //boxShadow: "inset 1px 1px 1px 1px rgba(5,107,223,.8)",
+    outline: "solid rgba(5, 107, 223, .8) 1px",
+    outlineOffset: "-1px",
     background: "rgba(143, 224, 249, .1)"
   }
 };
@@ -43,25 +44,37 @@ const styles = {
 const Cell = props => {
   const {
     classes,
-    rowIndex,
-    colIndex,
+    rowindex,
+    colindex,
     id,
     selectedCells,
     startCell,
     cell,
     inputMode,
+    activeInput,
     inputValue,
     handleChangeInput,
     handlePaste
   } = props;
+  const { startRow, startCol, finalRow, finalCol } = selectedCells;
 
   const cellRef = useRef();
   useEffect(() => {
-    if (startCell === [rowIndex, colIndex]) {
+    if (startCell === id) {
       cellRef.current.focus();
     }
-  }, [startCell]);
+  }, [startCell, id]);
 
+  const isSelected = () => {
+    if (startRow === null) return false;
+    const row = id.split("-")[0];
+    const col = id.split("-")[1];
+    const rowMin = Math.min(startRow, finalRow);
+    const rowMax = Math.max(startRow, finalRow);
+    const colMin = Math.min(startCol, finalCol);
+    const colMax = Math.max(startCol, finalCol);
+    return row >= rowMin && row <= rowMax && col >= colMin && col <= colMax;
+  };
   return (
     <Fragment>
       <td
@@ -69,25 +82,25 @@ const Cell = props => {
         //contentEditable={true}
         //onPaste={handlePaste}
         id={id}
-        rowIndex={rowIndex}
-        colIndex={colIndex}
+        rowindex={rowindex}
+        colindex={colindex}
         tabIndex={0}
         className={classNames(
           classes.cell,
-          startCell === [rowIndex, colIndex]
+          startCell === id
             ? classes.cellFocus
-            : selectedCells &&
-                selectedCells.includes([rowIndex, colIndex]) &&
-                classes.cellSelected
+            : isSelected()
+            ? classes.cellSelected
+            : null
         )}
       >
-        {inputMode !== id ? (
-          cell.value
-        ) : (
+        {inputMode && activeInput === id ? (
           <InputCell
             inputValue={inputValue}
             handleChangeInput={handleChangeInput}
           />
+        ) : (
+          cell.value
         )}
       </td>
     </Fragment>

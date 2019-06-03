@@ -20,3 +20,7 @@ export const navKeys = [
   "ArrowLeft",
   "ArrowRight"
 ];
+
+export const backspace = "Backspace";
+
+export const enter = "Enter";

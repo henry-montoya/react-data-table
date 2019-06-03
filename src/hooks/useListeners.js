@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { navKeys } from "../constants";
 
 function useListeners(props) {
   const [mouseDown, setMouseDown] = useState(false);
   const [keyDown, setKeyDown] = useState(false);
   const [keyName, setKeyName] = useState(null);
-  const [target, setTarget] = useState([null, null]);
+  const [target, setTarget] = useState(null);
   const [inputMode, setInputMode] = useState(false);
-  const [activeInput, setActiveInput] = useState([null, null]);
-  const [currentCell, setCurrentCell] = useState([null, null]);
-  const [startCell, setStartCell] = useState([null, null]);
-  const [endCell, setEndCell] = useState([null, null]);
-  const [selectedCells, setSelectedCells] = useState([]);
+  const [activeInput, setActiveInput] = useState(null);
+  const [currentCell, setCurrentCell] = useState(null);
+  const [startCell, setStartCell] = useState(null);
+  const [endCell, setEndCell] = useState(null);
+  const [selectedCells, setSelectedCells] = useState({
+    startRow: null,
+    startCol: null,
+    finalRow: null,
+    finalCol: null
+  });
   useEffect(() => {
     window.addEventListener("mousedown", e => {
       handleMousedown(e);
@@ -35,62 +41,55 @@ function useListeners(props) {
     });
   }, []);
   useEffect(() => {
-    calcSelectedCells(startCell, currentCell, endCell);
-  }, [startCell, currentCell, endCell]);
+    calcSelectedCells(startCell, currentCell, endCell, mouseDown);
+  }, [startCell, currentCell, endCell, mouseDown]);
+  useEffect(() => {
+    handleNav(keyName, startCell);
+  }, [keyName]);
 
-  const calcSelectedCells = (startCell, currentCell, endCell) => {
-    const finalCell = endCell && endCell.length ? endCell : currentCell;
-    if (!startCell) return setSelectedCells([]);
-    if (startCell && finalCell) {
-      const startRow = parseInt(startCell[0]);
-      const startCol = parseInt(startCell[1]);
-      const finalRow = parseInt(finalCell[0]);
-      const finalCol = parseInt(finalCell[1]);
-      if (startCell === finalCell) {
-        return setSelectedCells([startCell]);
-      } else if (mouseDown) {
-        const colSpan = Math.abs(finalCol - startCol);
-        const rowSpan = Math.abs(finalRow - startRow);
-        let selected = [];
-        for (let j = 0; j <= rowSpan; j++) {
-          for (let i = 0; i <= colSpan; i++) {
-            if (startRow < finalRow) {
-              if (startCol < finalCol) {
-                selected.push([startRow + j, startCol + i]);
-              } else {
-                selected.push([startRow + j, finalCol + i]);
-              }
-            } else {
-              if (startCol < finalCol) {
-                selected.push([finalRow + j, startCol + i]);
-              } else {
-                selected.push([finalRow + j, finalCol + i]);
-              }
-            }
-          }
-        }
-        return setSelectedCells(selected);
-      }
-    }
+  const calcSelectedCells = (startCell, currentCell, endCell, mouseDown) => {
+    const finalCell = mouseDown && currentCell ? currentCell : endCell;
+    if (!startCell)
+      return setSelectedCells({
+        startRow: null,
+        startCol: null,
+        finalRow: null,
+        finalCol: null
+      });
+    const startRow = startCell ? parseInt(startCell.split("-")[0]) : null;
+    const startCol = startCell ? parseInt(startCell.split("-")[1]) : null;
+    const finalRow = finalCell ? parseInt(finalCell.split("-")[0]) : null;
+    const finalCol = finalCell ? parseInt(finalCell.split("-")[1]) : null;
+    return setSelectedCells({
+      startRow,
+      startCol,
+      finalRow,
+      finalCol
+    });
   };
 
   const handleMousedown = e => {
     setMouseDown(true);
-    const rowIndex = e.target.getAttribute("rowIndex");
-    const colIndex = e.target.getAttribute("colIndex");
-    if (rowIndex) return setStartCell([rowIndex, colIndex]);
-    return setStartCell(null);
+    // const rowindex = e.target.getAttribute("rowindex");
+    // const colindex = e.target.getAttribute("colindex");
+    if (e.target.id) {
+      setStartCell(e.target.id);
+      return setEndCell(e.target.id);
+    } else {
+      setEndCell(null);
+      return setStartCell(null);
+    }
   };
   const handleMouseup = e => {
     setMouseDown(false);
-    const rowIndex = e.target.getAttribute("rowIndex");
-    const colIndex = e.target.getAttribute("colIndex");
-    if (rowIndex) setEndCell([rowIndex, colIndex]);
+    // const rowindex = e.target.getAttribute("rowindex");
+    // const colindex = e.target.getAttribute("colindex");
+    if (e.target.id) setEndCell(e.target.id);
   };
   const handleMouseover = e => {
-    const rowIndex = e.target.getAttribute("rowIndex");
-    const colIndex = e.target.getAttribute("colIndex");
-    if (rowIndex) setCurrentCell([rowIndex, colIndex]);
+    // const rowindex = e.target.getAttribute("rowindex");
+    // const colindex = e.target.getAttribute("colindex");
+    if (e.target.id) setCurrentCell(e.target.id);
   };
   const handleKeydown = e => {
     setKeyDown(true);
@@ -98,20 +97,36 @@ function useListeners(props) {
   };
   const handleKeyup = e => {
     setKeyDown(false);
+    setKeyName(null);
   };
   const handleClick = e => {
-    const rowIndex = e.target.getAttribute("rowIndex");
-    const colIndex = e.target.getAttribute("colIndex");
-    if (rowIndex) return setTarget([rowIndex, colIndex]);
+    // const rowindex = e.target.getAttribute("rowindex");
+    // const colindex = e.target.getAttribute("colindex");
+    if (e.target.id) return setTarget(e.target.id);
     setInputMode(false);
   };
   const handleDblClick = e => {
-    const rowIndex = e.target.getAttribute("rowIndex");
-    const colIndex = e.target.getAttribute("colIndex");
-    if (rowIndex) {
+    // const rowindex = e.target.getAttribute("rowindex");
+    // const colindex = e.target.getAttribute("colindex");
+    if (e.target.id) {
       setInputMode(true);
-      setActiveInput([rowIndex, colIndex]);
+      setActiveInput(e.target.id);
     }
+  };
+
+  const handleNav = (key, start) => {
+    if (!navKeys.includes(key)) return;
+    const startRow = start ? parseInt(startCell.split("-")[0]) : null;
+    const startCol = start ? parseInt(startCell.split("-")[1]) : null;
+    if (key === "Enter") {
+      setStartCell(`${startRow + 1}-${startCol}`);
+      setEndCell(`${startRow + 1}-${startCol}`);
+    }
+    if (key === "Tab") {
+      setStartCell(`${startRow}-${startCol + 1}`);
+      setEndCell(`${startRow}-${startCol + 1}`);
+    }
+    setInputMode(false);
   };
 
   return {
@@ -123,7 +138,8 @@ function useListeners(props) {
     activeInput,
     currentCell,
     startCell,
-    endCell
+    endCell,
+    selectedCells
   };
 }
 

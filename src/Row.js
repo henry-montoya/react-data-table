@@ -39,10 +39,11 @@ const Row = props => {
   const {
     classes,
     row,
-    rowIndex,
+    rowindex,
     selectedCells,
     startCell,
     inputMode,
+    activeInput,
     inputValue,
     handleChangeInput,
     showRowHeaders,
@@ -54,21 +55,26 @@ const Row = props => {
     <tr>
       {showRowHeaders && (
         <th
-          id={`r-${rowIndex}`}
+          id={`r-${rowindex}`}
           className={classNames(
             !disableSelectRow ? classes.headerCell : classes.inactiveHeader
           )}
         >
-          {rowHeaders[rowIndex].label}
+          {rowHeaders[rowindex].label}
         </th>
       )}
       {row.map((cell, i) => {
-        const id = `${rowIndex}-${i}`;
+        const id = `${rowindex}-${i}`;
         return (
           <Cell
+            key={id}
             id={id}
-            rowIndex={rowIndex}
-            colIndex={i}
+            rowindex={rowindex}
+            colindex={i}
+            inputMode={inputMode}
+            activeInput={activeInput}
+            inputValue={inputValue}
+            handleChangeInput={handleChangeInput}
             startCell={startCell}
             selectedCells={selectedCells}
             cell={cell}
