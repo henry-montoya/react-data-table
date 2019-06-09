@@ -18,27 +18,13 @@ function useListeners(props) {
     finalCol: null
   });
   useEffect(() => {
-    window.addEventListener("mousedown", e => {
-      handleMousedown(e);
-    });
-    window.addEventListener("mouseup", e => {
-      handleMouseup(e);
-    });
-    window.addEventListener("keydown", e => {
-      handleKeydown(e);
-    });
-    window.addEventListener("keyup", e => {
-      handleKeyup(e);
-    });
-    window.addEventListener("click", e => {
-      handleClick(e);
-    });
-    window.addEventListener("dblclick", e => {
-      handleDblClick(e);
-    });
-    window.addEventListener("mouseover", e => {
-      handleMouseover(e);
-    });
+    window.addEventListener("mousedown", e => handleMousedown(e));
+    window.addEventListener("mouseup", e => handleMouseup(e));
+    window.addEventListener("keydown", e => handleKeydown(e));
+    window.addEventListener("keyup", e => handleKeyup(e));
+    window.addEventListener("click", e => handleClick(e));
+    window.addEventListener("dblclick", e => handleDblClick(e));
+    window.addEventListener("mouseover", e => handleMouseover(e));
   }, []);
   useEffect(() => {
     calcSelectedCells(startCell, currentCell, endCell, mouseDown);
