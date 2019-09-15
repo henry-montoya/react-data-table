@@ -1,6 +1,6 @@
 import React from "react";
 import TableStore from "./TableStore";
-import Table from "./Table";
+import DataTable from "./DataTable";
 
 const data = [
   [{ value: 1 }, { value: 2 }, { value: 3 }, { value: 4 }, { value: 5 }],
@@ -10,38 +10,38 @@ const data = [
 
 const colHeaders = [
   {
-    label: "taco bell"
+    label: "Taco Bell"
   },
   {
     label: "KFC"
   },
   {
-    label: "Jesus"
+    label: "ChickFilA"
   },
   {
-    label: "PornHub"
+    label: "Pizza Hut"
   },
   {
-    label: "Indica"
+    label: "Popeyes"
   }
 ];
 
 const rowHeaders = [
   {
-    label: "taco bell"
+    label: "Fat"
   },
   {
-    label: "KFC"
+    label: "Carbs"
   },
   {
-    label: "Jesus"
+    label: "Sodium"
   }
 ];
 
 function App(props) {
   return (
     <TableStore>
-      <Table
+      <DataTable
         data={data}
         colHeaders={colHeaders}
         rowHeaders={rowHeaders}
