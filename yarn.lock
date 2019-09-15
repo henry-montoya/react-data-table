@@ -8134,6 +8134,14 @@ react-scripts@3.0.0:
   optionalDependencies:
     fsevents "2.0.6"
 
+react-search-swap@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/react-search-swap/-/react-search-swap-1.0.4.tgz#4b40ffa8be5ece9d6efab0023c446bce957094d9"
+  integrity sha512-T1oBoVF+my32rdqo2EnLS3m6BBv/MXfYxJIMnaJmhwAZrRnMazZz7WTFLN5s8UK+ZTnDyZFhrJgAQmeR6k9Bpg==
+  dependencies:
+    lodash "^4.17.11"
+    react "^16.8.6"
+
 react-transition-group@^2.2.1:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.9.0.tgz#df9cdb025796211151a436c69a8f3b97b5b07c8d"

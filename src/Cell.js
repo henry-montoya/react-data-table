@@ -2,21 +2,25 @@ import React, { Fragment, useRef, useEffect } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import classNames from "classnames";
 import InputCell from "./InputCell";
+import TableCell from "@material-ui/core/TableCell";
 
 const styles = {
   cell: {
-    border: "solid lightgray 1px",
-    borderTop: "solid rgb(247, 246, 246) 1px",
-    borderBottom: "solid rgb(247, 246, 246) 1px",
-    borderCollapse: "collapse",
-    width: 60,
-    height: 20,
-    margin: 0,
+    // border: "solid lightgray 1px",
+    // borderTop: "solid rgb(247, 246, 246) 1px",
+    // borderBottom: "solid rgb(247, 246, 246) 1px",
+    // borderCollapse: "collapse",
+    // width: 60,
+    // height: 20,
+    // margin: 0,
     //paddingLeft: 8,
     //paddingRight: 8,
     //paddingTop: 3,
     //paddingBottom: 3,
-    fontSize: 12,
+    // fontSize: 12,
+    //padding: 5,
+    //margin: 0,
+    textAlign: "center",
     userSelect: "none",
     "&:hover": {
       cursor: "cell"
@@ -56,14 +60,15 @@ const Cell = props => {
     handleChangeInput,
     handlePaste
   } = props;
+  console.log("start", startCell);
   const { startRow, startCol, finalRow, finalCol } = selectedCells;
 
   const cellRef = useRef();
-  useEffect(() => {
-    if (startCell === id) {
-      cellRef.current.focus();
-    }
-  }, [startCell, id]);
+  // useEffect(() => {
+  //   if (startCell === id) {
+  //     cellRef.current.focus();
+  //   }
+  // }, [startCell, id]);
 
   const isSelected = () => {
     if (startRow === null) return false;
@@ -77,7 +82,7 @@ const Cell = props => {
   };
   return (
     <Fragment>
-      <td
+      <TableCell
         ref={cellRef}
         //contentEditable={true}
         //onPaste={handlePaste}
@@ -94,7 +99,7 @@ const Cell = props => {
             : null
         )}
       >
-        {inputMode && activeInput === id ? (
+        {inputMode && activeInput === id && startCell === id ? (
           <InputCell
             inputValue={inputValue}
             handleChangeInput={handleChangeInput}
@@ -102,7 +107,7 @@ const Cell = props => {
         ) : (
           cell.value
         )}
-      </td>
+      </TableCell>
     </Fragment>
   );
 };
